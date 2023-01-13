@@ -1,6 +1,7 @@
 <template>
-	<view>
-		我的
+	<view class="my-container-box">
+		<my-login v-if="!token"></my-login>
+		<my-userInfo v-else></my-userInfo>
 	</view>
 </template>
 
@@ -10,12 +11,14 @@
 		mixins:[tabbar],
 		data() {
 			return {
-				
+				token:'jfd'
 			};
 		}
 	}
 </script>
 
 <style lang="scss">
-
+.my-container-box{
+	height: 100%;
+}
 </style>

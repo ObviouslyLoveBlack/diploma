@@ -15,7 +15,7 @@
 </template>
 
 <script>
-	import {mapGetters,mapMutations} from 'vuex'
+	import {mapGetters,mapMutations,mapState} from 'vuex'
 	export default {
 		name:"my-settle",
 		data() {
@@ -24,6 +24,7 @@
 			};
 		},
 		computed:{
+			...mapState('user',['address','token']),
 			...mapGetters('cart',['stateTotal','total','priceTotal']),
 			isFullChecked(){
 				return this.total === this.stateTotal
@@ -35,7 +36,17 @@
 				this.updateAllState(!this.isFullChecked)
 			},
 			settlePrice(){
-				console.log(this.priceTotal);
+				if(!this.stateTotal) return uni.$showMsg('请选择结算物品...')
+				if(JSON.stringify(this.address) === '{}') return uni.$showMsg('请选择收货地址...')
+				if(!this.token) {
+				   uni.$showMsg('请先登录,两秒后前往登录...')
+				  setTimeout(()=>{
+					  uni.switchTab({
+					  	url:'/pages/my/my'
+					  })
+				  },2000)
+				}
+				
 			}
 		}
 	}
