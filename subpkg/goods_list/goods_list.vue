@@ -1,18 +1,8 @@
 <template>
 	<view>
 		<view class="goods-box">
-			<view class="goods-item" v-for="action in goodsList" :key="action.cat_id" @click="goGoodsDetail(action)">
-				<view class="goods-item-left">
-					<image :src="action.goods_small_logo || defaultSrc" mode="" class="goods-item-img"></image>
-				</view>
-				<view class="goods-item-info">
-					<view class="goods-item-name">
-						{{action.goods_name}}
-					</view>
-					<view class="goods-item-price">
-						<span>￥</span>{{action.goods_price | toFixed}}
-					</view>
-				</view>
+			<view class="goods-item" v-for="(action,i) in goodsList" :key="i" @click="goGoodsDetail(action)">
+				<my-goods :action="action"></my-goods>
 			</view>
 		</view>
 	</view>
@@ -31,13 +21,7 @@
 				goodsList:[],
 				total:null,
 				isLoading:false,
-				defaultSrc:'https://img3.doubanio.com/f/movie/8dd0c794499fe925ae2ae89ee30cd225750457b4/pics/movie/celebrity-default-medium.png'
 			};
-		},
-		filters:{
-			toFixed(num){
-				return Number(num).toFixed(2)
-			}
 		},
 		onLoad(options) {
 			this.queryObj.query = options.query || ''
@@ -84,25 +68,6 @@
 		display: flex;
 		padding: 20rpx;
 		border-bottom: 1px solid #eaeaea;
-		.goods-item-left{
-			margin-right: 20rpx;
-			.goods-item-img{
-				width: 200rpx;
-				height: 200rpx;
-				display: block;
-			}
-		}
-		.goods-item-info{
-			display: flex;
-			flex-direction: column;
-			justify-content: space-between;
-			.goods-item-name{
-				font-size: 26rpx;
-			}
-			.goods-item-price{
-				color: #C00000;
-			}
-		}
 	}
 }
 </style>
