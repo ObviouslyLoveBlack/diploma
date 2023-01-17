@@ -16,15 +16,19 @@
 
 <script>
 	import {mapGetters,mapMutations,mapState} from 'vuex'
+	import balance from '@/mixins/tabbar.js'
 	export default {
 		name:"my-settle",
+		mixins:[balance],
 		data() {
 			return {
-				// isFullChecked:true
+				times:3,  //延迟时间
+				timer:null  //定时器名
 			};
 		},
 		computed:{
 			...mapState('user',['address','token']),
+			...mapState('cart',['cart']),
 			...mapGetters('cart',['stateTotal','total','priceTotal']),
 			isFullChecked(){
 				return this.total === this.stateTotal
@@ -32,22 +36,45 @@
 		},
 		methods:{
 			...mapMutations('cart',['updateAllState']),
+			...mapMutations('user',['setRedirectInfo']),
 			changeAllState(){
 				this.updateAllState(!this.isFullChecked)
 			},
 			settlePrice(){
 				if(!this.stateTotal) return uni.$showMsg('请选择结算物品...')
 				if(JSON.stringify(this.address) === '{}') return uni.$showMsg('请选择收货地址...')
-				if(!this.token) {
-				   uni.$showMsg('请先登录,两秒后前往登录...')
-				  setTimeout(()=>{
-					  uni.switchTab({
-					  	url:'/pages/my/my'
-					  })
-				  },2000)
-				}
-				
+				if(!this.token)  return  this.delayNavigate()
+				// 开始创建支付订单
+				this.balance()
+			},
+			showTips(time){
+				uni.showToast({
+					icon:'none',
+					title:'请先登录再结算！' + time+'秒后自动前往登录',
+					duration:1500,
+					mask:true
+				})
+			},
+			delayNavigate(){
+				this.times = 3
+				this.showTips(this.times)
+				this.timer = setInterval(()=>{
+					this.times --
+					if(this.times <=0){
+						clearInterval(this.timer)
+						uni.switchTab({
+							url:'/pages/my/my'
+						})
+						this.setRedirectInfo({
+							type:'switchTab',
+							from:'pages/cart/cart'
+						})
+						return
+					}
+					this.showTips(this.times)
+				},1000)
 			}
+			
 		}
 	}
 </script>

@@ -76,7 +76,7 @@
 				// 	}
 				// 	return newArr
 				// },[])
-				//set 去重
+				//set 去重  只能去重普通数组  包含对象的数组无法去重
 				// this.historyList.push(this.inputKey)
 				// const set = new Set(this.historyList)
 				// this.historyList = Array.from(set)

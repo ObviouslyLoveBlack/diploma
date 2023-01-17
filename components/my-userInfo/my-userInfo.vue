@@ -2,15 +2,27 @@
 	<view class="my-container">
 		<view class="userInfo-userimg-box">
 			<view class="userimg-box">
-				<image src="../../static/gyy-3.png" mode="" class="userimg-img"></image>
+				<image src="@/static/gyy-3.png" mode="" class="userimg-img"></image>
 			</view>
-			<text class="userInfo-name">故之</text>
+			<text class="userInfo-name">{{userInfo.name}}</text>
 		</view>
 		<view class="userInfo-detail-box">
 			<view class="detail-shop-info">
-				<view class="shop-info-item" v-for="(action,i) in shopInfoList" :key="i">
-					<text>{{action.num}}</text>
-					<text>{{action.title}}</text>
+				<view class="shop-info-item">
+					<text>8</text>
+					<text>收藏的店铺</text>
+				</view>
+				<view class="shop-info-item" @click="collection()">
+					<text>{{collectionGoods.length}}</text>
+					<text>收藏的商品</text>
+				</view>
+				<view class="shop-info-item">
+					<text>12</text>
+					<text>关注的商品</text>
+				</view>
+				<view class="shop-info-item">
+					<text>99</text>
+					<text>足迹</text>
 				</view>
 			</view>
 			<view class="detail-shop-order">
@@ -31,7 +43,7 @@
 					<text>联系客服</text>
 					<uni-icons type="forward"></uni-icons>
 				</view>
-				<view class="shop-address-item">
+				<view class="shop-address-item" @click="logout">
 					<text>退出登录</text>
 					<uni-icons type="forward"></uni-icons>
 				</view>
@@ -41,27 +53,11 @@
 </template>
 
 <script>
+	import {mapState,mapMutations} from 'vuex'
 	export default {
 		name: "my-userInfo",
 		data() {
 			return {
-				shopInfoList: [{
-						num: 8,
-						title: '收藏的店铺'
-					},
-					{
-						num: 14,
-						title: '收藏的商品'
-					},
-					{
-						num: 18,
-						title: '关注的商品'
-					},
-					{
-						num: 84,
-						title: '足迹'
-					}
-				],
 				InfoOrderList: [{
 						url: '../../static/my-icons/icon1.png',
 						title: '待付款'
@@ -80,6 +76,30 @@
 					}
 				],
 			};
+		},
+		computed:{
+			...mapState('user',['userInfo','collectionGoods'])
+		},
+		methods:{
+			...mapMutations('user',['updateAddress','setUserInfo','setToken']),
+			collection(){
+				uni.navigateTo({
+					url:'/subpkg/goods_collection/goods_collection'
+				})
+			},
+			async logout(){
+				uni.showModal({
+					title:'提示',
+					content:'确定退出登录吗?',
+					success:(res)=> {
+						if(res.confirm){
+							this.updateAddress({})
+							this.setUserInfo({})
+							this.setToken('')
+						}
+					}
+				})
+			}
 		}
 	}
 </script>

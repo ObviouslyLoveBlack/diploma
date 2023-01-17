@@ -1,18 +1,24 @@
 <template>
 	<view class="my-container-box">
-		<my-login v-if="!token"></my-login>
+		<my-login v-if="!tokenDetail"></my-login>
 		<my-userInfo v-else></my-userInfo>
 	</view>
 </template>
 
 <script>
+	import {mapGetters,mapMutations} from 'vuex'
 	import tabbar from '@/mixins/tabbar.js'
 	export default {
 		mixins:[tabbar],
 		data() {
 			return {
-				token:'jfd'
 			};
+		},
+		computed:{
+			...mapGetters('user',['tokenDetail'])
+		},
+		methods:{
+			...mapMutations('user',['setToken'])
 		}
 	}
 </script>

@@ -13,8 +13,8 @@
 				<view class="info-title">
 					<text>{{detailInfo.goods_name}}</text>
 					<view class="star">
-						<uni-icons type="star" size="18"></uni-icons>
-						<text>收藏</text>
+						<uni-icons type="star-filled" size="18" :color=" collection ? '#C00000' : ''"></uni-icons>
+						<text @click="collectionGood(detailInfo)">收藏</text>
 					</view>
 				</view>
 				<view class="detail-roade">
@@ -39,11 +39,15 @@
 		mapMutations,
 		mapGetters
 	} from 'vuex'
+	import balance from '@/mixins/tabbar.js'
 	export default {
+		mixins:[balance],
 		data() {
 			return {
 				detailInfo: {},
 				goods_id: null,
+				collection:false,
+				id:'',
 				options: [{
 						icon: 'headphones',
 						text: '客服'
@@ -73,6 +77,7 @@
 		},
 		computed: {
 			...mapState('cart', ['cart']),
+			...mapState('user',['token']),
 			...mapGetters('cart',['total'])
 		},
 		watch:{
@@ -87,11 +92,14 @@
 			}
 		},
 		onLoad(options) {
+			this.id = options.goods_id
 			this.goods_id = options
+			this.collection = options.goods_collection || false
 			this.getGoodsDetail()
 		},
 		methods: {
 			...mapMutations('cart', ['addToCart']),
+			...mapMutations('user',['addcollection','setRedirectInfo']),
 			async getGoodsDetail() {
 				const {
 					data: res
@@ -126,7 +134,39 @@
 						goods_state: true  
 					}
 					this.addToCart(goods)
+				} else {
+					if(!this.token) {
+					   this.getShowModal()
+					}
+					this.balance()
 				}
+			},
+			async getShowModal(){
+				const [err,sucess] = await uni.showModal({
+					title:'提示',
+					content:'您还没有登录,是否前往登录'
+				}).catch(err=>err)
+				if(sucess.confirm){
+					this.setRedirectInfo({
+						type:'navigateTo',
+						from:'subpkg/goods_detail/goods_detail?goods_id=' + this.id
+					})
+					uni.switchTab({
+						url:'/pages/my/my'
+					})
+				}
+			},
+			collectionGood(detailInfo){
+				this.collection = !this.collection
+				const {goods_id,goods_name,goods_price,goods_small_logo} = this.detailInfo
+				const goods = {
+					goods_id,
+					goods_name,
+					goods_price,
+					goods_small_logo,
+					goods_collection :this.collection
+				}
+				this.addcollection(goods)
 			}
 		}
 	}
@@ -156,8 +196,11 @@
 				justify-content: space-between;
 				margin: 20rpx 0px;
 				align-items: center;
-
+                text{
+					flex: 1;
+				}
 				.star {
+					margin-left: 30rpx;
 					display: flex;
 					flex-direction: column;
 					align-items: center;

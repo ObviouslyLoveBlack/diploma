@@ -36,7 +36,7 @@
 			...mapGetters('user',['addressDetail'])
 		},
 		methods:{
-			...mapMutations('user',['updateAddres']),
+			...mapMutations('user',['updateAddress']),
 		async chooseAddress(){
 			const [err,success] =await uni.chooseAddress({}).catch(err=>err)
 			if(err ==null && success.errMsg === 'chooseAddress:ok'){
@@ -46,10 +46,9 @@
 				success.countyName = '西湖区'
 				success.detailInfo = '三墩镇振中路202号乐乎城市青年社区'
 				success.userName = '故之'
-				this.updateAddres(success)
+				this.updateAddress(success)
 				this.isChooseAddress = true
 			}
-			console.log(err,success);
 			if(err && err.errMsg ==='chooseAddress:fail cancel'){
 				// this.reAuth()
 			}
